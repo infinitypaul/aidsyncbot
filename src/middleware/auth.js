@@ -20,6 +20,13 @@ module.exports = async (ctx, next) => {
 
         const userId = ctx.message.from.id;
         const groupId = ctx.chat.id;
+        const command = ctx.message.text.split(" ")[0];
+
+
+        if (command === "/setup") {
+            console.log("🚀 Allowing /setup to run without authentication.");
+            return next();
+        }
 
         console.log(`🔍 Checking access control for group ID: ${groupId}`);
 
