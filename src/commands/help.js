@@ -106,8 +106,16 @@ module.exports.handleStart = async (ctx, bot) => {
     activeSessions[userId] = pendingSessions[userId];
     delete pendingSessions[userId];
 
+    const session = activeSessions[userId];
 
-    return bot.telegram.sendMessage(userId, `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n📩 Please enter your **${activeSessions[userId].steps[activeSessions[userId].stepIndex]}**:`);
+    return bot.telegram.sendMessage(
+        userId,
+        `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n`
+        + `📌 *Your Original Request:* "${session.originalMessage}"\n\n`
+        + `📩 Please enter your **${session.steps[session.stepIndex]}**:`,
+        { parse_mode: "Markdown" }
+    );
+    // return bot.telegram.sendMessage(userId, `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n📩 Please enter your **${activeSessions[userId].steps[activeSessions[userId].stepIndex]}**:`);
 };
 
 

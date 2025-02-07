@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "127.0.0.1",
-    port: process.env.SMTP_PORT || 1025,
-    secure: false,
-    auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
+    host: process.env.SMTP_HOST || "smtp.mailgun.org",
+    port: process.env.SMTP_PORT || 587,
+    secure: process.env.SMTP_PORT === 465,
+    auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
-    } : undefined,
+    },
     tls: {
         rejectUnauthorized: false
     }
@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 async function sendVerificationEmail(email, token) {
     try {
         await transporter.sendMail({
-            from: `"CareBot" <no-reply@carebot.test>`,
+            from: `"CareBot" <no-reply@${process.env.MAILGUN_DOMAIN}>`,
             to: email,
             subject: 'CareBot Email Verification',
             text: `Your CareBot verification token is: ${token}`,
