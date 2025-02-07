@@ -1,0 +1,6 @@
+# Database files (SQLite)
+carebot.db
+carebot.db-wal
+carebot.db-shm
+database.sqlite
+*.sqlite3
