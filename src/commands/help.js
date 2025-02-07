@@ -5,7 +5,6 @@ const pendingSessions = {};
 
 module.exports = async (ctx, bot) => {
     console.log("📩 /help command received!");
-
     if (!ctx.message.reply_to_message) {
         return ctx.reply("⚠️ Please reply to a user's message to use /help.");
     }
@@ -13,7 +12,6 @@ module.exports = async (ctx, bot) => {
     const user = ctx.message.reply_to_message.from;
     const originalMessage = ctx.message.reply_to_message.text || "No Text Available";
     const groupId = ctx.chat.id;
-
 
     const args = ctx.message.text.split(" ").slice(1);
     const requestedFields = args.length ? args : ["email", "description", "file"];
@@ -35,14 +33,8 @@ module.exports = async (ctx, bot) => {
         console.log(`✅ Support info found: ${company_name}`);
         console.log(`🛠 Asking for fields: ${requestedFields.join(", ")}`);
 
-
-        ctx.telegram.sendMessage(
-            groupId,
-            `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`
-        );
-
         try {
-
+            // ✅ Send DM to the user
             await ctx.telegram.sendMessage(
                 user.id,
                 `🔹 **${company_name} || ${email} Support** 🔹\n\n`
@@ -51,7 +43,13 @@ module.exports = async (ctx, bot) => {
                 + `I will now ask you a few questions based on your request.`
             );
 
+            // ✅ Notify the group **only if DM succeeds**
+            ctx.telegram.sendMessage(
+                groupId,
+                `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`
+            );
 
+            // ✅ Start the help session
             activeSessions[user.id] = {
                 groupId,
                 username: user.username || user.first_name,
@@ -61,13 +59,13 @@ module.exports = async (ctx, bot) => {
                 responses: {},
             };
 
-
+            // Ask the first question
             await askNextQuestion(user.id, bot);
         } catch (error) {
             if (error.response && error.response.error_code === 403) {
                 console.error(`❌ Error: Cannot message @${user.username || user.first_name}, they haven't started the bot.`);
 
-
+                // Store session to resume later
                 pendingSessions[user.id] = {
                     groupId,
                     username: user.username || user.first_name,
@@ -78,8 +76,11 @@ module.exports = async (ctx, bot) => {
                 };
 
                 return ctx.reply(
-                    `⚠️ @${user.username || user.first_name}, I can't message you directly. Please start the bot first: `
-                    + `👉 [Click Here](https://t.me/${process.env.BOT_USERNAME}?start=help)`,
+                    `👋 Hi @${user.username || user.first_name},\n\n`
+                    + `Admin @${ctx.message.from.first_name || ''} is trying to assist you with your request, but I need some additional details from you.\n\n`
+                    + `🚨 *I can only message you directly if you start the bot first.*\n\n`
+                    + `👉 Please click here to continue: [Start CareBot](https://t.me/${process.env.BOT_USERNAME}?start=help)\n\n`
+                    + `Once you've started the bot, I'll send you a message with the next steps! 😊`,
                     { parse_mode: "Markdown" }
                 );
             }
@@ -89,6 +90,7 @@ module.exports = async (ctx, bot) => {
         }
     });
 };
+
 
 
 module.exports.handleStart = async (ctx, bot) => {
