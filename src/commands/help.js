@@ -163,7 +163,7 @@ module.exports.handleUserResponse = async (ctx, bot) => {
 };
 
 
-function notifyAdmins(session, bot) {
+async function notifyAdmins(session, bot) {
     const { groupId, username, originalMessage, responses } = session;
 
     db.all("SELECT user_id FROM admins WHERE group_id = ?", [groupId], async (err, admins) => {
@@ -172,13 +172,32 @@ function notifyAdmins(session, bot) {
             return;
         }
 
-        let fileMessage = responses.file || "No file uploaded.";
+        let fileMessage = "No file uploaded.";
+
+
+        if (responses.file && responses.file !== "No file uploaded.") {
+            const fileId = responses.file.replace("[Photo: ", "").replace("]", ""); // Extract file_id
+
+            try {
+
+                const fileInfo = await bot.telegram.getFile(fileId);
+                const filePath = fileInfo.file_path;
+
+
+                fileMessage = `[📎 View Uploaded File](https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${filePath})`;
+            } catch (error) {
+                console.error("❌ Error retrieving file path:", error);
+                fileMessage = "⚠️ Failed to fetch file.";
+            }
+        }
+
 
         const message = `📩 **New Support Request from @${username}**\n\n`
             + `📌 **Original Message:** "${originalMessage}"\n`
             + `📧 **Email:** ${responses.email || "Not Provided"}\n`
             + `📝 **Description:** ${responses.description || "Not Provided"}\n`
             + `📎 **File:** ${fileMessage}`;
+
 
         admins.forEach((admin) => {
             bot.telegram.sendMessage(admin.user_id, message, { parse_mode: "Markdown" });
@@ -187,6 +206,7 @@ function notifyAdmins(session, bot) {
         console.log(`✅ Support request sent to ${admins.length} admins.`);
     });
 }
+
 
 
 module.exports.activeSessions = activeSessions;
