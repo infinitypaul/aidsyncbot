@@ -1,6 +1,6 @@
 # 🤖 CareBot - Telegram Support Bot
 
-CareBot is a **Telegram support bot** built using **Node.js** and **Telegraf.js**, designed to facilitate **support requests** within Telegram groups. It allows **admins** to initiate support requests for users, collect necessary details via DM, and notify other admins.
+CareBot is a **Telegram support bot designed to facilitate **support requests** within Telegram groups. It allows **admins** to initiate support requests for users, collect necessary details via DM, and notify other admins.
 
 ---
 
