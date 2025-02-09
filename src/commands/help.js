@@ -141,11 +141,21 @@ module.exports.handleUserResponse = async (ctx, bot) => {
 
     if (!session) return;
 
-    const userResponse = ctx.message.text || "Attachment Received";
+    let userResponse = ctx.message.text || "Attachment Received";
+
     console.log(`📩 User response from @${session.username}: ${userResponse}`);
 
-    session.responses[session.steps[session.stepIndex]] = userResponse;
 
+    if (ctx.message.document) {
+        session.responses.file = ctx.message.document.file_id;
+        userResponse = `[File uploaded: ${ctx.message.document.file_name}]`;
+    } else if (ctx.message.photo) {
+        const largestPhoto = ctx.message.photo[ctx.message.photo.length - 1]; // Get the highest resolution
+        session.responses.file = largestPhoto.file_id;
+        userResponse = "[Photo uploaded]";
+    } else {
+        session.responses[session.steps[session.stepIndex]] = userResponse;
+    }
 
     session.stepIndex++;
 
@@ -153,14 +163,12 @@ module.exports.handleUserResponse = async (ctx, bot) => {
         return askNextQuestion(userId, bot);
     }
 
-
     notifyAdmins(session, bot);
-
-
     delete activeSessions[userId];
 
     return bot.telegram.sendMessage(userId, "✅ Thank you! Your issue has been forwarded to our support team.");
 };
+
 
 
 async function notifyAdmins(session, bot) {
@@ -174,17 +182,15 @@ async function notifyAdmins(session, bot) {
 
         let fileMessage = "No file uploaded.";
 
-
-        if (responses.file && responses.file !== "No file uploaded.") {
-            const fileId = responses.file.replace("[Photo: ", "").replace("]", ""); // Extract file_id
-
+        if (responses.file) {
+            const fileId = responses.file;
             try {
-
+                // ✅ Fetch file path from Telegram API
                 const fileInfo = await bot.telegram.getFile(fileId);
                 const filePath = fileInfo.file_path;
 
 
-                fileMessage = `[📎 View Uploaded File](https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${filePath})`;
+                fileMessage = `[📎 Download File](https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${filePath})`;
             } catch (error) {
                 console.error("❌ Error retrieving file path:", error);
                 fileMessage = "⚠️ Failed to fetch file.";
@@ -198,7 +204,6 @@ async function notifyAdmins(session, bot) {
             + `📝 **Description:** ${responses.description || "Not Provided"}\n`
             + `📎 **File:** ${fileMessage}`;
 
-
         admins.forEach((admin) => {
             bot.telegram.sendMessage(admin.user_id, message, { parse_mode: "Markdown" });
         });
@@ -206,6 +211,7 @@ async function notifyAdmins(session, bot) {
         console.log(`✅ Support request sent to ${admins.length} admins.`);
     });
 }
+
 
 
 
