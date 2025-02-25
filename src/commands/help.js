@@ -157,13 +157,31 @@ module.exports.handleUserResponse = async (ctx, bot) => {
     }
 
 
-    if (ctx.message.document) {
-        session.responses.file = ctx.message.document.file_id;
-        userResponse = `[File uploaded: ${ctx.message.document.file_name}]`;
-    } else if (ctx.message.photo) {
-        const largestPhoto = ctx.message.photo[ctx.message.photo.length - 1]; // Get the highest resolution
-        session.responses.file = largestPhoto.file_id;
-        userResponse = "[Photo uploaded]";
+    // if (ctx.message.document) {
+    //     session.responses.file = ctx.message.document.file_id;
+    //     userResponse = `[File uploaded: ${ctx.message.document.file_name}]`;
+    // } else if (ctx.message.photo) {
+    //     const largestPhoto = ctx.message.photo[ctx.message.photo.length - 1]; // Get the highest resolution
+    //     session.responses.file = largestPhoto.file_id;
+    //     userResponse = "[Photo uploaded]";
+    // } else {
+    //     session.responses[session.steps[session.stepIndex]] = userResponse;
+    // }
+
+    if (session.steps[session.stepIndex] === "file") {
+        if (ctx.message.document) {
+            session.responses.file = ctx.message.document.file_id;
+            userResponse = `[File uploaded: ${ctx.message.document.file_name}]`;
+        } else if (ctx.message.photo) {
+            const largestPhoto = ctx.message.photo[ctx.message.photo.length - 1];
+            session.responses.file = largestPhoto.file_id;
+            userResponse = "[Photo uploaded]";
+        } else if (userResponse.toLowerCase() === "skip") {
+            session.responses.file = "No file uploaded.";
+            userResponse = "User skipped file upload.";
+        } else {
+            return bot.telegram.sendMessage(userId, "⚠️ Invalid response. Please upload a file or type 'skip' if you do not want to upload.");
+        }
     } else {
         session.responses[session.steps[session.stepIndex]] = userResponse;
     }
