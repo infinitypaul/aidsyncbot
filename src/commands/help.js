@@ -44,9 +44,13 @@ module.exports = async (ctx, bot) => {
             );
 
             // ✅ Notify the group **only if DM succeeds**
-            ctx.telegram.sendMessage(
-                groupId,
-                `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`
+            // ctx.telegram.sendMessage(
+            //     groupId,
+            //     `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`
+            // );
+            ctx.reply(
+                `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`,
+                { parse_mode: "Markdown" }
             );
 
             // ✅ Start the help session
