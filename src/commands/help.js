@@ -211,7 +211,7 @@ async function notifyAdmins(session, bot) {
 
         let fileMessage = "No file uploaded.";
 
-        if (responses.file) {
+        if (responses.file && responses.file !== "No file uploaded.") {
             const fileId = responses.file;
             try {
                 // ✅ Fetch file path from Telegram API
