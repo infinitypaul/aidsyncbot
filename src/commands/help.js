@@ -2,6 +2,7 @@ const db = require("../storage/database");
 
 const activeSessions = {};
 const pendingSessions = {};
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 module.exports = async (ctx, bot) => {
     console.log("📩 /help command received!");
@@ -148,6 +149,12 @@ module.exports.handleUserResponse = async (ctx, bot) => {
     let userResponse = ctx.message.text || "Attachment Received";
 
     console.log(`📩 User response from @${session.username}: ${userResponse}`);
+
+    if (session.steps[session.stepIndex] === "email") {
+        if (!emailRegex.test(userResponse)) {
+            return bot.telegram.sendMessage(userId, "⚠️ Invalid email format. Please enter a valid email address:");
+        }
+    }
 
 
     if (ctx.message.document) {
