@@ -81,13 +81,14 @@ module.exports = async (ctx, bot) => {
                 };
 
                 return ctx.reply(
-                    `👋 Hi @${user.username || user.first_name},\n\n`
-                    + `Admin @${ctx.message.from.first_name || ''} is trying to assist you with your request, but I need some additional details from you.\n\n`
+                    `👋 Hi ${escapeMarkdownV2("@" + (user.username || user.first_name))},\n\n`
+                    + `Admin ${escapeMarkdownV2("@" + (ctx.message.from.first_name || ''))} is trying to assist you with your request, but I need some additional details from you.\n\n`
                     + `🚨 *I can only message you directly if you start the bot first.*\n\n`
                     + `👉 Please click here to continue: [Start CareBot](https://t.me/${process.env.BOT_USERNAME}?start=help)\n\n`
                     + `Once you've started the bot, I'll send you a message with the next steps! 😊`,
-                    { parse_mode: "Markdown" }
+                    { parse_mode: "MarkdownV2" }
                 );
+
             }
 
             console.error("❌ Error sending DM:", error);
@@ -95,6 +96,10 @@ module.exports = async (ctx, bot) => {
         }
     });
 };
+
+function escapeMarkdownV2(text) {
+    return text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
+}
 
 
 
