@@ -81,13 +81,14 @@ module.exports = async (ctx, bot) => {
                 };
 
                 return ctx.reply(
-                    `👋 Hi ${escapeMarkdownV2("@" + (user.username || user.first_name))},\n\n`
-                    + `Admin ${escapeMarkdownV2("@" + (ctx.message.from.first_name || ''))} is trying to assist you with your request, but I need some additional details from you.\n\n`
-                    + `🚨 *I can only message you directly if you start the bot first.*\n\n`
+                    `👋 Hi [${escapeMarkdownV2(user.first_name)}](tg://user?id=${user.id}),\n\n`
+                    + `Admin [${escapeMarkdownV2(ctx.message.from.first_name)}](tg://user?id=${ctx.message.from.id}) is trying to assist you with your request, but I need some additional details from you\\.\n\n`
+                    + `🚨 *I can only message you directly if you start the bot first\\.*\n\n`
                     + `👉 Please click here to continue: [Start CareBot](https://t.me/${escapeMarkdownV2(process.env.BOT_USERNAME)}?start=help)\n\n`
-                    + `Once you've started the bot, I'll send you a message with the next steps! 😊`,
+                    + `Once you've started the bot, I'll send you a message with the next steps\\! 😊`,
                     { parse_mode: "MarkdownV2" }
                 );
+
 
             }
 
@@ -98,8 +99,10 @@ module.exports = async (ctx, bot) => {
 };
 
 function escapeMarkdownV2(text) {
+    if (!text) return "";
     return text.replace(/[_*\[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
 }
+
 
 
 
