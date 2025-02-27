@@ -88,6 +88,7 @@ module.exports = async (ctx, bot) => {
                     + `Once you've started the bot, I'll send you a message with the next steps! 😊`,
                     { parse_mode: "MarkdownV2" }
                 );
+
             }
 
             console.error("❌ Error sending DM:", error);
@@ -97,8 +98,9 @@ module.exports = async (ctx, bot) => {
 };
 
 function escapeMarkdownV2(text) {
-    return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+    return text.replace(/[_*\[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
 }
+
 
 
 
