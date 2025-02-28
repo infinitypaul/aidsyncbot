@@ -35,13 +35,19 @@ module.exports = async (ctx, bot) => {
         console.log(`🛠 Asking for fields: ${requestedFields.join(", ")}`);
 
         try {
+            const escapedCompany = escapeMarkdownV2(company_name);
+            const escapedEmail = escapeMarkdownV2(email);
+            const escapedUserHandle = escapeMarkdownV2(user.username || user.first_name);
+            const escapedOriginalMsg = escapeMarkdownV2(originalMessage);
+
             // ✅ Send DM to the user
             await ctx.telegram.sendMessage(
                 user.id,
-                `🔹 **${company_name} || ${email} Support** 🔹\n\n`
-                + `Hi @${user.username || user.first_name}, we are here to assist you.\n\n`
-                + `📌 **Your original message:**\n"${originalMessage}"\n\n`
-                + `I will now ask you a few questions based on your request.`
+                `🔹 **${escapedCompany} \\|\\| ${escapedEmail} Support** 🔹\n\n` +
+                `Hi @${escapedUserHandle}, we are here to assist you\\.\n\n` +
+                `📌 **Your original message:**\n"${escapedOriginalMsg}"\n\n` +
+                `I will now ask you a few questions based on your request\\.`,
+                { parse_mode: "MarkdownV2" } // Add parse mode
             );
 
             // ✅ Notify the group **only if DM succeeds**
@@ -56,7 +62,7 @@ module.exports = async (ctx, bot) => {
                 `🚨 **New Support Request** 🚨\n` +
                 `👤 Username: @${escapedUsername}\n` +
                 `📌 Issue: "${escapedOriginalMessage}"\n` +
-                `📝 Awaiting user details...`,
+                `📝 Awaiting user details\\.\\.\\.`,
                 { parse_mode: "MarkdownV2" }
             );
 
