@@ -49,9 +49,15 @@ module.exports = async (ctx, bot) => {
             //     groupId,
             //     `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`
             // );
-            ctx.reply(
-                `🚨 **New Support Request** 🚨\n👤 Username: @${user.username || user.first_name}\n📌 Issue: "${originalMessage}"\n📝 Awaiting user details...`,
-                { parse_mode: "Markdown" }
+            const escapedUsername = escapeMarkdownV2(user.username || user.first_name);
+            const escapedOriginalMessage = escapeMarkdownV2(originalMessage);
+
+            await ctx.reply(
+                `🚨 **New Support Request** 🚨\n` +
+                `👤 Username: @${escapedUsername}\n` +
+                `📌 Issue: "${escapedOriginalMessage}"\n` +
+                `📝 Awaiting user details...`,
+                { parse_mode: "MarkdownV2" }
             );
 
             // ✅ Start the help session
