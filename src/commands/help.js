@@ -141,7 +141,7 @@ module.exports.handleStart = async (ctx, bot) => {
         + `📩 Please enter your **${session.steps[session.stepIndex]}**:`,
         { parse_mode: "Markdown" }
     );
-    // return bot.telegram.sendMessage(userId, `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n📩 Please enter your **${activeSessions[userId].steps[activeSessions[userId].stepIndex]}**:`);
+
 };
 
 

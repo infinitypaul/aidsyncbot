@@ -69,9 +69,14 @@ bot.on("message", async (ctx) => {
         activeSessions[user.id] = pendingSessions[user.id];
         delete pendingSessions[user.id];
 
-        return ctx.reply(
+        return bot.telegram.sendMessage(
+            user.id,
             `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n📩 Please enter your **${activeSessions[user.id].steps[activeSessions[user.id].stepIndex]}**:`
         );
+
+        // return ctx.reply(
+        //     `✅ Thanks for starting the bot! Let's continue from where we stopped.\n\n📩 Please enter your **${activeSessions[user.id].steps[activeSessions[user.id].stepIndex]}**:`
+        // );
     }
 
 
